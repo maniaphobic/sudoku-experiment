@@ -25,7 +25,7 @@ class Puzzle
 
   def initialize
     @puzzle = [[],[],[],[],[],[],[],[],[]]
-    populate()
+    populate_while()
   end
 
   def cell_num(row, col)
@@ -110,27 +110,51 @@ class Puzzle
     return false
   end
 
-  def populate
+  def populate_range
     (0..8).each do |row|
-      @puzzle << []
       (0..8).each do |col|
-        count = 0
+        count = 1
         while true
           digit = rand(9)+1
-          count += 1
-          if count == 8 then @puzzle[row][col]='?'; break end
+          if count > 9 then @puzzle[row][col]='?'; break end
           next if
             in_row?(digit, row) or
             in_column?(digit, col) or
             in_cell?(digit, cell_num(row,col))
-          print digit
+#DEBUG#          print digit#DEBUG#
+          @puzzle[row][col] = digit
+          count += 1
+          break
+        end
+#DEBUG#        print ' ' if col > 0 and (col+1)%3 == 0#DEBUG#
+      end
+#DEBUG#      print "\n"#DEBUG#
+#DEBUG#      print "\n" if row > 0 and (row+1)%3 == 0#DEBUG#
+    end
+  end
+
+  def populate_while
+    row = 0
+    while row < 9
+      col = 0
+      while col < 9
+        count = 1
+        while true
+          digit = rand(9)+1
+          count += 1
+          if count > 20 then col = 0; break end
+          next if
+            in_row?(digit, row) or
+            in_column?(digit, col) or
+            in_cell?(digit, cell_num(row,col))
           @puzzle[row][col] = digit
           break
         end
-        print ' ' if col > 0 and (col+1)%3 == 0
+        col += 1
       end
+      print @puzzle[row]
+      row += 1
       print "\n"
-      print "\n" if row > 0 and (row+1)%3 == 0
     end
   end
 
