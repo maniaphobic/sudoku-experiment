@@ -1,0 +1,152 @@
+#!/usr/bin/env ruby1.9
+
+class Cell
+
+  def initialize
+    @cell = []
+    [0,1,2].each do |i|
+      @cell << []
+      [0,1,2].each do |j|
+        puts "(#{i},#{j})"
+        @cell[i][j] = rand(10)
+      end
+    end
+  end
+
+  def display
+    [0,1,2].each do |i|
+      puts "#{@cell[i][0]} #{@cell[i][1]} #{@cell[i][2]}"
+    end
+  end
+
+end
+
+class Puzzle
+
+  def initialize
+    @puzzle = [[],[],[],[],[],[],[],[],[]]
+    populate()
+  end
+
+  def cell_num(row, col)
+    cell = -1
+    if row < 3 then
+      if col < 3 then
+        cell = 0
+      elsif col > 2 and col < 6 then
+        cell = 1
+      else
+        cell = 2
+      end
+    elsif row > 2 and row < 6 then
+      if col < 3 then
+        cell = 3
+      elsif col > 2 and col < 6 then
+        cell = 4
+      else
+        cell = 5
+      end
+    elsif row > 5 then
+      if col < 3 then
+        cell = 6
+      elsif col > 2 and col < 6 then
+        cell = 7
+      else
+        cell = 8
+      end
+    end
+    return cell
+  end
+
+  def display
+    (0..8).each do |r|
+      puts @puzzle[r].join(' ').insert(5,' ').insert(13,' ')
+      print "\n" if r != 8 and (r+1)%3 == 0
+    end
+  end
+
+  def in_cell?(digit, cell)
+
+    if cell < 3
+      rows = [0,1,2]
+      case cell
+        when 0 then cols = [0,1,2]
+        when 1 then cols = [3,4,5]
+        when 2 then cols = [6,7,8]
+      end
+    elsif cell > 2 and cell < 6
+      rows = [3,4,5]
+      case cell
+        when 3 then cols = [0,1,2]
+        when 4 then cols = [3,4,5]
+        when 5 then cols = [6,7,8]
+      end
+    elsif cell > 5
+      rows = [6,7,8]
+      case cell
+        when 6 then cols = [0,1,2]
+        when 7 then cols = [3,4,5]
+        when 8 then cols = [6,7,8]
+      end
+    end
+
+    rows.each do |row|
+      cols.each do |col|
+        return true if @puzzle[row][col] == digit
+      end
+    end
+
+    return false
+
+  end
+
+  def in_column?(digit, col)
+    (0..8).to_a.each {|row| return true if @puzzle[row][col] == digit}
+    return false
+  end
+
+  def in_row?(digit, row)
+    (0..8).to_a.each {|col| return true if @puzzle[row][col] == digit}
+    return false
+  end
+
+  def populate
+    (0..8).each do |row|
+      @puzzle << []
+      (0..8).each do |col|
+        count = 0
+        while true
+          digit = rand(9)+1
+          count += 1
+          if count == 8 then @puzzle[row][col]='?'; break end
+          next if
+            in_row?(digit, row) or
+            in_column?(digit, col) or
+            in_cell?(digit, cell_num(row,col))
+          print digit
+          @puzzle[row][col] = digit
+          break
+        end
+        print ' ' if col > 0 and (col+1)%3 == 0
+      end
+      print "\n"
+      print "\n" if row > 0 and (row+1)%3 == 0
+    end
+  end
+
+end
+
+puzzle = Puzzle.new
+puzzle.display
+exit
+
+row = []
+while true
+  digit = rand(10)
+  next if digit == 0 or row.index(digit)
+  row << digit
+  break if row.length == 9
+end
+
+puts row
+
